@@ -188,8 +188,9 @@
 			        	        + "    <img width=\"120px;\" height=\"130px;\" src=\"images/"+entry.pimage1+"\">"
 			        	        + "  </a><br/>"
 			        	        + "제품명 : "+entry.pname+"<br/>"
-			        	        + "정가 : <span style=\"color: red; text-decoration: line-through;\">"+entry.price+" 원</span><br/>"
-			        	        + "판매가 : <span style=\"color: red; font-weight: bold;\">"+entry.saleprice+" 원</span><br/>"
+			        	        // 숫자.toLocaleString('en'); 3자리마다 콤마를 부여하여 문자열 타입으로 return
+			        	        + "정가 : <span style=\"color: red; text-decoration: line-through;\">"+(entry.price).toLocaleString('en')+" 원</span><br/>"
+			        	        + "판매가 : <span style=\"color: red; font-weight: bold;\">"+(entry.saleprice).toLocaleString('en')+" 원</span><br/>"
 			        	        + "할인율 : <span style=\"color: blue; font-weight: bold;\">["+entry.percent+"%] 할인</span><br/>"
 			        	        + "포인트 : <span style=\"color: orange;\">"+entry.point+" POINT</span><br/>"
 			        	        + "</div>";
@@ -220,10 +221,7 @@
 			}
 		}); // end of ajax
 	} // end of function	
-	
-	
-	
-	
+
 </script>
     
 <h2>::: 쇼핑몰 상품 :::</h2>    

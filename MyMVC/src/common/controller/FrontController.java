@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 //		servlet을 구동한 다음에 initParams로 단 한번만 구동되기 때문에 properties에서 새로운 .do를 매핑 했을 때 인식 X
 //		>> properties를 수정했을 때 WAS 및 서블릿을 반드시 재구동 해야함
 				
-				@WebInitParam(name = "propertyConfig", value = "C:/myjsp/MyMVC/WebContent/WEB-INF/Command.properties", description = "*.do관련 class Mapping Info")
+				@WebInitParam(name = "propertyConfig", value = "C:/Git/myjsp/MyMVC/WebContent/WEB-INF/Command.properties", description = "*.do관련 class Mapping Info")
 		})
 public class FrontController extends HttpServlet {
 //	>>FrontController; 배치서술자의 역할 -> 모든 *.do를 다 받아와서 받아온 .do가 어떤 기능을 하는지 알려줌

@@ -1492,7 +1492,108 @@ public class ProductDAO implements InterProductDAO {
 		
 		return productList;
 	}
+
+//	[181205]
+//	#Ajax; 좋아요, 싫어요 수를 selct하는 메소드(jsp_like, jsp_dislike)
+	@Override
+	public HashMap<String, Integer> getLikeDislikeCnt(String pnum) throws SQLException {
+		HashMap<String, Integer> likeDislikeMap = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select (select count(*) \n"+
+					"        from jsp_like\n"+
+					"        where pnum = ?) as likecnt\n"+
+					"    ,  (select count(*) \n"+
+					"        from jsp_dislike\n"+
+					"        where pnum = ?) as dislikecnt   \n"+
+					"from dual";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);
+			pstmt.setString(2, pnum);
+			
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+
+			int likecnt = rs.getInt("likecnt");
+			int dislikecnt = rs.getInt("dislikecnt");
+
+			likeDislikeMap = new HashMap<String, Integer>();
+			likeDislikeMap.put("likeCnt", likecnt);
+			likeDislikeMap.put("dislikeCnt", dislikecnt);
+		
+		} finally {
+			close();
+		}
+		
+		return likeDislikeMap;
+	}
+
+//	#Ajax; like테이블에 insert하는 메소드
+	@Override
+	public int insertLike(String userid, String pnum) throws SQLException {
+		int n = 0;
+		
+		try {
+			conn = ds.getConnection();
+			
+//			#먼저 이 사람이 dislike를 했을 경우에 dislike를 지우는 작업이 선행
+			String sql = " delete from jsp_dislike where userid=? and pnum =? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userid);
+			pstmt.setString(2, pnum);
+			
+			pstmt.executeUpdate();	// 실행한 경우, 실행 안한경우 모두 가능
+			
+//			#like insert작업 수행
+			sql=" insert into jsp_like(userid, pnum) values(?, ?)";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userid);
+			pstmt.setString(2, pnum);
+
+			n = pstmt.executeUpdate();
+		} finally {
+			close();
+		}		
+		return n;
+	}
 	
-	
+//	#Ajax; dislike테이블에 insert하는 메소드
+	@Override
+	public int insertDislike(String userid, String pnum) throws SQLException {
+		int n = 0;
+		
+		try {
+			conn = ds.getConnection();
+			
+//			#먼저 이 사람이 like를 했을 경우에 like를 지우는 작업이 선행
+			String sql = " delete from jsp_like where userid=? and pnum =? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userid);
+			pstmt.setString(2, pnum);
+			
+			pstmt.executeUpdate();	// 실행한 경우, 실행 안한경우 모두 가능
+			
+//			#dislike insert작업 수행
+			sql=" insert into jsp_dislike(userid, pnum) values(?, ?)";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userid);
+			pstmt.setString(2, pnum);
+
+			n = pstmt.executeUpdate();
+		} finally {
+			close();
+		}		
+		return n;
+	}	
 
 } // end of class

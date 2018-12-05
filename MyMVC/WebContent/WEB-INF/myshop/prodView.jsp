@@ -5,6 +5,9 @@
 
 <jsp:include page="../header.jsp"/>
 
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" /> 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
 <style>
  .line {
  	border: 0px solid gray;
@@ -18,7 +21,10 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
-
+		// 좋아요 싫어요 수 로딩하기
+		 goLikeDislikeCountShow();
+		
+		
 	    $("#spinner").spinner( {
 		   spin: function(event, ui) {
 			   if(ui.value > 100) {
@@ -30,8 +36,8 @@
 				   return false;          
 			   }
 		   }   
-		 });// end of $("#spinner").spinner({});
-		   
+		 });// end of spinner
+		 
 	});// end of $(document).ready();
 	
 //	#제품번호와 수량을 받아서 장바구니에 추가하는 메소드
@@ -64,7 +70,8 @@
 			}
 		}
 	}
-	
+
+
 //	#주문하기 메소드
 	function goOrder(pnum){
 	var frm = document.cartOrderFrm;
@@ -90,35 +97,102 @@
 			}
 			else{	// 1개 이상 주문한 경우
 				// 물품수량*실판매가 , 물품수량*포인트
-				
-				var coin = ${sessionScope.loginuser.coin};
-				if(sumtotalprice>coin){	// 코인잔액보다 주문총액이 많은 경우
-					var coinYN = confirm("코인 잔액이 부족합니다. 코인을 충전 하시겠습니까?");
-					if(!coinYN){
-						return;
+				/*
+				if(${sessionScope.loginuser != null}){
+					var coin = ${sessionScope.loginuser.coin};
+					if(sumtotalprice>coin){	// 코인잔액보다 주문총액이 많은 경우
+						var coinYN = confirm("코인 잔액이 부족합니다. 코인을 충전 하시겠습니까?");
+						if(!coinYN){
+							return;
+						}
+						else{
+							var url = "coinPurchaseTypeChoice.do?idx="+${(sessionScope.loginuser).idx};
+							window.open(url, "coinPurchaseTypeChoice", "left=350px, top=100px, width=650px, height=570px");
+						}
 					}
-					else{
-						var url = "coinPurchaseTypeChoice.do?idx="+${(sessionScope.loginuser).idx};
-						window.open(url, "coinPurchaseTypeChoice", "left=350px, top=100px, width=650px, height=570px");
-					}
-				}
-				else {	// 코인잔액이 충분한 경우
-					var sumtotalprice = oqty*parseInt("${pvo.saleprice}");
-					var sumtotalpoint = oqty*parseInt("${pvo.point}");
-				
-					frm.sumtotalprice.value= sumtotalprice;
-					frm.sumtotalpoint.value= sumtotalpoint;
+					else {	// 코인잔액이 충분한 경우 */
+						var sumtotalprice = oqty*parseInt("${pvo.saleprice}");
+						var sumtotalpoint = oqty*parseInt("${pvo.point}");
 					
-					frm.method = "POST";
-					frm.action = "orderAdd.do";
-					frm.submit();
-				}
+						frm.sumtotalprice.value= sumtotalprice;
+						frm.sumtotalpoint.value= sumtotalpoint;
+						
+						frm.method = "POST";
+						frm.action = "orderAdd.do";
+						frm.submit();
+				/*	}
+				} */
+			}
+		}
+	} // end of goOrder
+
+	
+//	[181205]
+//	좋아요/싫어요 기능 ==> Ajax처리
+
+// #좋아요 싫어요 누적카운트 보여주기 --> 문서가 로딩되면 실행되어야함
+	function goLikeDislikeCountShow(){	
+		var form_data = {"pnum":"${pvo.pnum}"};
+		$.ajax({
+			url: "likeDislikeCntShow.do",
+			type: "GET",
+			data: form_data,
+			dataType: "JSON",
+			success: function(json){
+				// 1개행만 가져오면 되기 때문에 JSONObject 사용
+				var likeCnt = json.likeCnt;
+				var dislikeCnt = json.dislikeCnt;
+				
+				$("#likeCnt").html(likeCnt);
+				$("#dislikeCnt").html(dislikeCnt);
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 			
-				
-		}
-	}	
+		});
+	}
 
+//	#좋아요 추가하기 함수
+	function goLikeAdd(pnum){
+		var form_data = {"userid":"${sessionScope.loginuser.userid}", "pnum":pnum};
+		$.ajax({
+			url: "likeAdd.do",
+			type: "POST",
+			data: form_data,
+			dataType: "JSON",
+			success: function(json){
+				swal(json.msg);
+				goLikeDislikeCountShow();
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+
+		});
+	}// end of goListAdd
+	
+	
+	function goDislikeAdd(pnum){
+		var form_data = {"userid":"${sessionScope.loginuser.userid}", "pnum":pnum};
+		$.ajax({
+			url: "dislikeAdd.do",
+			type: "POST",
+			data: form_data,
+			dataType: "JSON",
+			success: function(json){
+				swal(json.msg);
+				goLikeDislikeCountShow();
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+
+		});
+	}// end of goDislikeAdd
+
+
+	
 	
 </script>
 
@@ -176,5 +250,42 @@
 			
 		</div>
 	</div>
+	<%-- 제품 상세 설명 --%>
+	<div class="row">
+		<div class="col-md-12 line">
+			<span style="font-weight: bold; font-size: 15pt; color: white; background-color: navy;">제품설명</span>
+			<p>
+			${pvo.pcontent}
+		</div>
+	</div>
+	
+	<%-- 좋아요 싫어요 버튼 --%>
+	<div class="row" style="margin-bottom: 30px;">
+			
+			<div class="col-md-offset-4 col-md-1">
+				<img width="100%" src="<%= request.getContextPath() %>/images/like.png" style="cursor: pointer;" onClick="goLikeAdd('${pvo.pnum}')"/>
+			</div>
+			
+			<div class="col-md-1" id="likeCnt" style="color: blue; font-size: 10pt; text-align: left;">
+			</div>
+			
+			<div class="col-md-1">
+				<img width="100%" src="<%= request.getContextPath() %>/images/dislike.png" style="cursor: pointer;" onClick="goDislikeAdd('${pvo.pnum}')"/>
+			</div>
+			
+			<div class="col-md-1" id="dislikeCnt" style="color: red; font-size: 10pt; text-align: left;">
+			
+			</div>
+		
+	</div>
+	
+
+	
+	
+	
 </div>
+
+
+
+
 <jsp:include page="../footer.jsp"/>

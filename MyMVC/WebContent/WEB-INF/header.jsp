@@ -19,8 +19,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<%= ctxPath %>/jquery-ui-1.11.4.custom/jquery-ui.min.css" /> 
 <script type="text/javascript" src="<%= ctxPath %>/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script> 
 
@@ -95,6 +95,11 @@
 				<a data-toggle="modal" data-target="#searchStore" data-dismiss="modal">매장찾기</a>
 				<%-- #searchStore 에 대한 내용은 footer.jsp에 있음 --%>
 			</div>	
+			
+			<%-- session test --%>
+			<div class="col-md-1">
+			   <a href="<%= ctxPath%>/sessionTest.do">세션테스트</a>
+			</div>
 		<c:if test="${sessionScope.loginuser!=null && sessionScope.loginuser.userid eq 'admin'}">
 			<div class="col-md-1">
 				<a href="<%= ctxPath %>/admin/productRegister.do">제품등록</a> 

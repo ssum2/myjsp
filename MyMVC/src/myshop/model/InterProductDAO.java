@@ -88,5 +88,15 @@ public interface InterProductDAO {
 
 //	#Ajax; 상품정보를 '더보기'버튼으로 페이징처리한 상품리스트 가져오는 메소드
 	List<ProductVO> getProductsByPspec(String pspec, int startRno, int endRno) throws SQLException;
+
+	
+//	#Ajax; 좋아요, 싫어요수를 select하는 메소드
+	HashMap<String, Integer> getLikeDislikeCnt(String pnum) throws SQLException;
+
+//	#Ajax; 특정 물품에 특정 회원이 좋아요를 눌렀을 때 jsp_like 테이블에 insert하는 메소드
+	int insertLike(String userid, String pnum) throws SQLException;
+	
+//	#Ajax; 특정 물품에 특정 회원이 싫어요를 눌렀을 때 jsp_dislike 테이블에 insert하는 메소드
+	int insertDislike(String userid, String pnum) throws SQLException;
 	
 }

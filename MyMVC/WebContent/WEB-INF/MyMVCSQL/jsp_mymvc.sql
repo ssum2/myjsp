@@ -1577,3 +1577,40 @@ order by pnum asc;
 update jsp_product set pspec = 'NEW'
 where pnum >= 38;
 commit;
+
+
+-- [181205] 좋아요/싫어요
+------------- *** 특정제품의 좋아요 , 싫어요 Ajax 로 구현하기 *** ---------------
+select * from jsp_member;
+desc jsp_member;
+desc jsp_product;
+
+create table jsp_like
+(userid   varchar2(20) not null
+,pnum     number(8) not null
+,constraint PK_jsp_like primary key(userid, pnum)
+,constraint FK_jsp_like_userid foreign key(userid) references jsp_member(userid)
+,constraint FK_jsp_like_pnum foreign key(pnum) references jsp_product(pnum)
+);
+
+create table jsp_dislike
+(userid   varchar2(20) not null
+,pnum     number(8) not null
+,constraint PK_jsp_dislike primary key(userid, pnum)
+,constraint FK_jsp_dislike_userid foreign key(userid) references jsp_member(userid)
+,constraint FK_jsp_dislike_pnum foreign key(pnum) references jsp_product(pnum)
+);
+
+
+-- >> 좋아요 싫어요 둘 다 한 사용자마다 1번씩만 가능하게 해야하기 때문에 복합 primary key 제약을 걸어줌
+-- constraint PK_jsp_like primary key(userid, pnum)
+
+
+
+select (select count(*) 
+        from jsp_like
+        where pnum = 3) as likecnt
+    ,  (select count(*) 
+        from jsp_dislike
+        where pnum = 3) as dislikecnt   
+from dual;
