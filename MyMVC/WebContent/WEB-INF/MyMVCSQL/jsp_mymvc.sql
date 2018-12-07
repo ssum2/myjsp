@@ -1609,8 +1609,20 @@ create table jsp_dislike
 
 select (select count(*) 
         from jsp_like
-        where pnum = 3) as likecnt
+        where pnum = 35) as likecnt
     ,  (select count(*) 
         from jsp_dislike
-        where pnum = 3) as dislikecnt   
+        where pnum = 35) as dislikecnt   
 from dual;
+
+String sql = "select (select count(*) \n"+
+"        from jsp_like\n"+
+"        where pnum = ?) as likecnt\n"+
+"    ,  (select count(*) \n"+
+"        from jsp_dislike\n"+
+"        where pnum = ?) as dislikecnt   \n"+
+"from dual";
+
+
+select *
+from jsp_like;
